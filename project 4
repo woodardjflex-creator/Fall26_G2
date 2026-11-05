@@ -1,0 +1,38 @@
+Project 4 — Meeting 1: Architecture planning
+FICTIONAL EXAMPLE ONLY: The meeting, date, attendance, decisions, and progress below are invented to demonstrate a fully filled-out template. They are not evidence that a meeting occurred. Replace them with actual group records before submission.
+
+Course: CSCI 4221
+Group: 2
+Product: Student Course Registration System (fictional example)
+Meeting date: November 6, 2026
+Time: 3:30–4:15 p.m.
+Location: Microsoft Teams (simulated)
+Attendees: Jalen Woodard; Avery Brooks (fictional teammate); Morgan Ellis (fictional teammate)
+Minutes prepared by: Jalen Woodard
+Sprint: 4 (Architecture)
+Meeting agenda
+1. Review previous work and Sprint 4 product backlog items.
+2. Discuss cloud architecture, Docker containers, application components, and database design.
+3. Assign follow-up tasks, review risks, and agree on next steps.
+Discussion summary (simulated)
+Proposed a three-tier architecture: student browser, Flask API in a Docker container, and shared PostgreSQL database. Compared layered, client-server, and microservices templates. Defined Docker image as the packaged blueprint, container as a running isolated instance, and daemon as the background engine managing containers.
+Product backlog
+PBI	Status	Sprint	Estimate	Assigned	Reviewer
+Architecture diagram	Planned	4	1 day	Avery Brooks	Morgan Ellis
+Registration component design	Planned	4	2 days	Jalen Woodard	Avery Brooks
+Enrollment database schema	Planned	4	1 day	Jalen Woodard	Morgan Ellis
+Docker deployment specification	Planned	4	2 days	Morgan Ellis	Jalen Woodard
+Documentation and review	Planned	4	1 day	Avery Brooks	Jalen Woodard
+
+
+Decisions (simulated)
+Selected three-tier design for a manageable class project; PostgreSQL will be shared across application components.
+Individual assignments and updates (simulated)
+Jalen: design registration service and enrollment table. Avery: architecture diagram and authentication interfaces. Morgan: Docker specification and database connection strategy.
+Risks and blockers
+Potential issue: concurrent registrations could overfill a course. Mitigation: use transactional capacity checks.
+Next meeting
+November 9, 2026, 3:30 p.m.
+Deliverables
+- architecture.md: three-tier container architecture, component list, necessary files, and enrollment table structure.
+- minutes_1.md: example record for Sprint 4 meeting 1.
