@@ -1,0 +1,101 @@
+Project 4: Cloud-Based Software Architecture#
+Student: Jalen Woodard
+Group: 2
+Course: CSCI 4221
+Proposed Product: Student Course Registration System
+Assigned Component: Course Registration Management
+
+FICTIONAL PROJECT EXAMPLE: This product and its design are invented for a sample assignment. Your instructor requires the product from Project 1, so confirm or replace this scenario before submitting.
+
+Section 1: Description of the Container#
+The Student Course Registration System is a proposed cloud-based web application that lets students view courses, enroll in available sections, and review their schedules. The application follows a three-tier architecture: (1) presentation tier (browser and HTML templates), (2) application tier (Flask web service running in a Docker container), and (3) data tier (a shared PostgreSQL database). Other common architectural templates include client-server and microservices; this project selects three-tier architecture for its separation of concerns.
+
+Cloud-based software runs on remote computing infrastructure and can be accessed over a network. Docker packages the application and its dependencies into an isolated container. A Docker image is the read-only package used to create a container; the Docker daemon is the background service that manages images, containers, and networks. A daemon is generally a background process providing a service.
+
+The application container contains Python, Flask, application source code, HTML templates, and installed Python packages. The PostgreSQL database runs separately as a shared database service, not inside the application container. The application connects using environment variables, such as DATABASE_URL, rather than storing credentials in source control.
+
+Container configuration (proposed)#
+Base image: python:3.12-slim
+Web framework: Flask
+Application server: Gunicorn
+Database: PostgreSQL (separate shared service)
+Internal application port: 8000
+Secrets: injected as environment variables
+Persistent records: stored in PostgreSQL, not the disposable app container
+Architecture flow#
+Student browser -> Flask application container -> Shared PostgreSQL database
+
+Section 2: Components and Necessary Files#
+Major application components#
+Authentication: sign-in, sign-out, and account authorization.
+Course Catalog: display course offerings, meeting times, and capacity.
+Course Registration Management (assigned): enroll in a section, withdraw from a section, prevent duplicate registrations, and check available seats.
+Student Schedule: show the student's registered sections.
+Database Access: manage database connections and parameterized queries.
+Assigned component: Course Registration Management#
+Purpose: Accept a student's registration request, verify that the course section exists and has capacity, and save an enrollment record in the shared database. Withdrawal changes or removes the enrollment record according to the agreed policy.
+
+Subcomponents:
+
+Registration API routes: receive enrollment and withdrawal requests.
+Registration service: validate inputs and enforce enrollment rules.
+Registration repository: perform database operations.
+Enrollment model: represent registration data.
+Necessary files (planned):
+
+File	Purpose
+Dockerfile	Builds the Flask application image.
+requirements.txt	Lists Python dependencies.
+app.py	Creates and configures the Flask app.
+routes/registration.py	Defines registration HTTP endpoints.
+services/registration_service.py	Implements enrollment rules.
+models/enrollment.py	Defines the enrollment data model.
+database.py	Creates database connections.
+templates/courses.html	Displays available courses.
+templates/schedule.html	Displays a student's schedule.
+tests/test_registration.py	Tests enrollment and withdrawal behavior.
+.env.example	Documents environment variable names without real secrets.
+Proposed API operations#
+POST /registrations — register an authenticated student for a section.
+GET /registrations — list the authenticated student's registrations.
+DELETE /registrations/<enrollment_id> — withdraw an authorized enrollment.
+Authorization must ensure students can modify only their own enrollments. Enrollment should be processed in a database transaction to avoid oversubscribing sections when multiple students register simultaneously.
+
+Section 3: Structure of the Related Database Table#
+Table name: enrollments
+Database location: Shared PostgreSQL database service
+
+Column	PostgreSQL type	Constraint	Purpose
+enrollment_id	BIGINT	Primary key, generated identity	Unique registration identifier
+student_id	BIGINT	NOT NULL, foreign key	Student who registers
+section_id	BIGINT	NOT NULL, foreign key	Course section selected
+status	VARCHAR(20)	NOT NULL, checked	enrolled or withdrawn
+enrolled_at	TIMESTAMPTZ	NOT NULL, default current time	Registration timestamp
+CREATE TABLE enrollments (
+    enrollment_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    student_id BIGINT NOT NULL REFERENCES students(student_id),
+    section_id BIGINT NOT NULL REFERENCES course_sections(section_id),
+    status VARCHAR(20) NOT NULL DEFAULT 'enrolled'
+        CHECK (status IN ('enrolled', 'withdrawn')),
+    enrolled_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (student_id, section_id)
+);
+Relationships: Each enrollment belongs to one student and one course section. The referenced students and course_sections tables must exist before this table is created. The unique constraint prevents duplicate enrollment rows for the same student and section; a withdrawn enrollment may be reactivated according to application policy.
+
+Database operations: Create a registration, read current registrations, and update a registration to withdrawn. Capacity checks use the course_sections table and must be transaction-safe.
+
+Scrum and Sprint Plan#
+Product owners: All group members.
+ScrumMaster: Course instructor.
+Sprint: Sprint 4, corresponding to Project 4.
+Potentially shippable increment: Reviewed architecture documentation and database design.
+Estimated sprint duration: 2–3 weeks generally; follow the specific Project 4 deadline announced by the instructor.
+Meetings: Record three actual meetings and upload separate Markdown minutes.
+Proposed Product Backlog#
+PBI	Status	Sprint	Estimate	Assigned	Reviewer
+Design registration component	Proposed	4	2 days	Jalen Woodard	To be agreed
+Define enrollment database table	Proposed	4	1 day	Jalen Woodard	To be agreed
+Define authentication component	Unassigned	4	2 days	To be agreed	To be agreed
+Define course catalog component	Unassigned	4	2 days	To be agreed	To be agreed
+Review architecture and documentation	Unassigned	4	1 day	All members	To be agreed
+These are proposed tasks, not confirmed group assignments or completed work.
